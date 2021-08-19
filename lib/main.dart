@@ -91,8 +91,11 @@ class _HomePageState extends State<HomePage> {
   var lastName = '';
 
   getUserInfo() async {
-    firstName = await User.get("first_name");
-    lastName = await User.get("last_name");
+    var first = await User.get("first_name");
+    var last = await User.get("last_name");
+
+    setState(() {firstName = first;});
+    setState(() {lastName = last;});
   }
 
   @override

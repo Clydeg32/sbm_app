@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../styles/themes.dart';
 import './task_list.dart';
+import './task_dialog.dart';
 
 class DayPlanner extends StatefulWidget {
   @override
@@ -11,10 +12,18 @@ class DayPlanner extends StatefulWidget {
 class _DayPlannerState extends State<DayPlanner>
     with TickerProviderStateMixin  {
   TabController _taskTabController;
+
+  final GlobalKey<TaskListState> _listKey = GlobalKey();
   @override
   void initState() {
     super.initState();
-    _taskTabController = TabController(length: 7, vsync: this);
+    _taskTabController = TabController(length: 8, vsync: this);
+
+    _taskTabController.addListener(() {
+      if (_taskTabController.indexIsChanging) {
+        _listKey.currentState.updateCurrentTab(_taskTabController.index);
+      }
+    });
   }
 
   @override
@@ -33,15 +42,28 @@ class _DayPlannerState extends State<DayPlanner>
                 Tab(text: "Project"),
                 Tab(text: "Coaching"),
                 Tab(text: "Open Point"),
-                Tab(text: "Assigned To Tasks"),
+                Tab(text: "Checklist"),
+                Tab(text: "Assigned To Tasks")
               ]
           )
       ),
       body: Center(
-        child: TaskList()
+        child: TaskList(
+          key: _listKey,
+          selectedTab: _taskTabController.index
+        )
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => {},
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return TaskDialog();
+              }
+          ).then((val) {
+            setState(() {});
+          });
+        },
         tooltip: 'New Task',
         child: Icon(Icons.add),
       ),

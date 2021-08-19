@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import './constants.dart';
 
 class Api {
-  static post({path, dynamic params}) async {
+  static post({path, dynamic params, Function errorCallback}) async {
     if (params == null) {
       params = {};
     }
@@ -23,7 +23,43 @@ class Api {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
           'Authorization': await loadJwt(),
-          'JWT_AUD': 'AIE8lkfj8dDKJwd8fekDJSOSEke8w9k33j5kd75jsl'
+          'JWT_AUD': AUD
+        },
+        body: jsonEncode(params)
+    );
+
+    if (res.statusCode == 401) {
+      if (errorCallback != null) errorCallback(401);
+      return null;
+    }
+
+    if (res.statusCode == 500) {
+      if (errorCallback != null) errorCallback(500);
+      return null;
+    }
+
+    if (res.statusCode == 200) return jsonDecode(res.body);
+
+    return null;
+  }
+
+  static put({path, id, params}) async {
+    if (params == null) {
+      params = {};
+    }
+
+    if (jsonEncode(params) == null) {
+      throw new FormatException("Invalid params");
+    }
+
+    var uri = Uri.https(BASE_URL, path);
+    var res = await http.put(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': await loadJwt(),
+          'JWT_AUD': AUD
         },
         body: jsonEncode(params)
     );
@@ -39,10 +75,6 @@ class Api {
     if (res.statusCode == 200) return jsonDecode(res.body);
 
     return null;
-  }
-
-  static put({path, id, params}) async {
-
   }
 
   static delete({path, id, params}) async {
@@ -65,7 +97,7 @@ class Api {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
           'Authorization': await loadJwt(),
-          'JWT_AUD': 'AIE8lkfj8dDKJwd8fekDJSOSEke8w9k33j5kd75jsl'
+          'JWT_AUD': AUD
         }
     );
 

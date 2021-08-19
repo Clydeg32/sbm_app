@@ -17,7 +17,7 @@ class LoginPage extends StatelessWidget {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'JWT_AUD': 'AIE8lkfj8dDKJwd8fekDJSOSEke8w9k33j5kd75jsl'
+          'JWT_AUD': AUD
         },
         body: jsonEncode({
           "user": {
